@@ -1,6 +1,7 @@
 import AppKit
 import PulseKit
 import SwiftUI
+@preconcurrency import UserNotifications
 
 @main
 struct PulseApp: App {
@@ -12,7 +13,7 @@ struct PulseApp: App {
 }
 
 @MainActor
-final class AppDelegate: NSObject, NSApplicationDelegate {
+final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCenterDelegate {
     private var monitor: Monitor?
     private var statusItem: StatusItemController?
     private var settings: SettingsWindowController?
@@ -26,6 +27,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             return
         }
         applyAppearance()
+        UNUserNotificationCenter.current().delegate = self
         let monitor = Monitor()
         self.monitor = monitor
         statusItem = StatusItemController(monitor: monitor) { [weak self] in self?.showSettings() }
@@ -38,7 +40,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         }
         if args.contains("--open-settings") { showSettings() }
         if args.contains("--open-popover") { statusItem?.toggle() }
+        if args.contains("--test-alert") { Notifier().sendTest(server: "homelab", style: .halo) }
     }
+
+    /// Without this, macOS hides alerts while Pulse is frontmost (e.g. Settings open, "Send Test Alert").
+    nonisolated func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async
+        -> UNNotificationPresentationOptions { [.banner, .list, .sound] }
 
     func showSettings() {
         guard let monitor else { return }

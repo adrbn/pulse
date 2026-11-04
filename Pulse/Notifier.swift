@@ -11,8 +11,9 @@ final class Notifier {
     private var prefs: UserDefaults { AppGroup.defaults }
 
     func requestAuthorization() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { _, error in
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound]) { granted, error in
             if let error { NSLog("Pulse: notification authorization failed: \(error)") }
+            else if !granted { NSLog("Pulse: notifications denied in System Settings") }
         }
     }
 
@@ -93,7 +94,14 @@ final class Notifier {
         }
     }
 
+    /// Alerts switched off in System Settings fail silently: take the user to the switch instead.
     func sendTest(server: String, style: PulseStyle) {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            guard settings.authorizationStatus != .authorized else { return }
+            Task { @MainActor in
+                NSWorkspace.shared.open(URL(string: "x-apple.systempreferences:com.apple.Notifications-Settings.extension?id=dev.adrbn.pulse")!)
+            }
+        }
         send(key: "test", title: "\(server) unreachable for 3 min",
              body: "No response since \(Format.clock(.now.addingTimeInterval(-180))). This is a test alert.",
              server: server, glyph: style, cooldown: false)

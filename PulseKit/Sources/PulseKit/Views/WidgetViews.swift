@@ -35,7 +35,8 @@ enum WidgetText {
         switch status.level {
         case .offline: return "Offline · \(Format.ago(snap.server.lastSeen, now: now))"
         case .warning: return status.reasons.first.map { "Warning · \($0)" } ?? "Warning"
-        case .healthy: return healthyText
+        // WidgetKit can delay reloads: say how old the data is rather than look live.
+        case .healthy: return now.timeIntervalSince(snap.updatedAt) > 1200 ? "Updated \(Format.ago(snap.updatedAt, now: now))" : healthyText
         }
     }
 

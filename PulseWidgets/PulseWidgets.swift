@@ -72,10 +72,9 @@ struct EntryView: View {
     let entry: PulseEntry
     @Environment(\.widgetFamily) private var family
     var body: some View {
-        // The app reloads at most every 30 min and WidgetKit may throttle that: only call the server offline past 1 h of silence.
-        let stale = entry.date.timeIntervalSince(entry.snap.updatedAt) > 3600
+        // Only the app knows whether the server answers: show its last verdict, never guess from the entry's age.
         let status = StatusEngine.evaluate(entry.snap, treatStoppedAsWarning: entry.stoppedIsWarning,
-                                           now: stale ? entry.date : entry.snap.updatedAt)
+                                           now: entry.snap.updatedAt)
         PulseWidgetView(snap: entry.snap, status: status, style: entry.style, variant: entry.variant,
                         size: family == .systemMedium ? .medium : .small, now: entry.date)
             .containerBackground(.fill.tertiary, for: .widget)

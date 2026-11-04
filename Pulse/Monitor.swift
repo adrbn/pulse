@@ -155,13 +155,13 @@ final class Monitor {
         reloadWidgets(force: false)
     }
 
-    /// WidgetKit has a refresh budget: reload on visible changes, at most every 30 min otherwise.
+    /// WidgetKit has a refresh budget: reload on visible changes, at most every 10 min otherwise.
     func reloadWidgets(force: Bool) {
         guard let s = snapshot else { return }
         let key = [status.level.rawValue, "\(s.running)/\(s.total)", prefs.string(forKey: Pref.style) ?? "",
                    prefs.string(forKey: Pref.containerRing) ?? "", "\(prefs.bool(forKey: Pref.widgetsFollowStyle))"].joined(separator: "|")
         let now = Date.now
-        if force || key != lastWidgetKey || now.timeIntervalSince(lastWidgetReload) > 1800 {
+        if force || key != lastWidgetKey || now.timeIntervalSince(lastWidgetReload) > 600 {
             lastWidgetKey = key
             lastWidgetReload = now
             WidgetCenter.shared.reloadAllTimelines()

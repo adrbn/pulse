@@ -1,0 +1,84 @@
+name: Pulse
+
+options:
+  bundleIdPrefix: dev.adrbn
+  deploymentTarget:
+    macOS: "26.0"
+  createIntermediateGroups: true
+
+packages:
+  PulseKit:
+    path: PulseKit
+
+settings:
+  base:
+    SWIFT_VERSION: "6.0"
+    MACOSX_DEPLOYMENT_TARGET: "26.0"
+    MARKETING_VERSION: "1.0.1"
+    CURRENT_PROJECT_VERSION: "2"
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "Developer ID Application"
+    DEVELOPMENT_TEAM: 2TWQF4T93E
+    ENABLE_HARDENED_RUNTIME: "YES"
+  configs:
+    Release:
+      # Notarization: secure timestamp, no get-task-allow.
+      OTHER_CODE_SIGN_FLAGS: "--timestamp"
+      CODE_SIGN_INJECT_BASE_ENTITLEMENTS: "NO"
+
+targets:
+  Pulse:
+    type: application
+    platform: macOS
+    sources: [Pulse]
+    dependencies:
+      - package: PulseKit
+      - target: PulseWidgets
+    info:
+      path: Pulse/Info.plist
+      properties:
+        CFBundleDisplayName: Pulse
+        LSUIElement: true
+        LSApplicationCategoryType: public.app-category.utilities
+        NSHumanReadableCopyright: "© 2026 Adrien Robino"
+        NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
+    entitlements:
+      path: Pulse/Pulse.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.network.client: true
+        com.apple.security.application-groups: [2TWQF4T93E.dev.adrbn.pulse]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.adrbn.pulse
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+
+  PulseWidgets:
+    type: app-extension
+    platform: macOS
+    sources: [PulseWidgets]
+    dependencies:
+      - package: PulseKit
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    info:
+      path: PulseWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: Pulse
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+    entitlements:
+      path: PulseWidgets/PulseWidgets.entitlements
+      properties:
+        com.apple.security.app-sandbox: true
+        com.apple.security.application-groups: [2TWQF4T93E.dev.adrbn.pulse]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.adrbn.pulse.widgets
+
+schemes:
+  Pulse:
+    build:
+      targets:
+        Pulse: all

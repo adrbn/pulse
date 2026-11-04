@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="880" height="320" viewBox="0 0 880 320"><g transform="translate(0 0)"><rect x=".5" y=".5" width="279" height="149" rx="20" fill="#0E1118" stroke="#232A39"/>
+<rect x=".5" y=".5" width="279" height="149" rx="20" fill="url(#s0)"/>
+<defs><radialGradient id="s0" cx="0" cy="0" r="1" gradientTransform="translate(40 30) scale(220 160)"><stop offset="0" stop-color="#3FD4C9" stop-opacity=".22"/><stop offset="1" stop-color="#3FD4C9" stop-opacity="0"/></radialGradient></defs>
+<circle cx="38" cy="40" r="11" fill="none" stroke="#3FD4C9" stroke-width="3.5" stroke-dasharray="52 20" stroke-linecap="round" transform="rotate(-90 38 40)"/>
+<text x="24" y="88" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#F2F4F8">One look</text>
+<text x="24" y="114" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">CPU, memory, disk, heat,</text>
+<text x="24" y="133" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">load and network, as rings.</text></g><g transform="translate(300 0)"><rect x=".5" y=".5" width="279" height="149" rx="20" fill="#0E1118" stroke="#232A39"/>
+<rect x=".5" y=".5" width="279" height="149" rx="20" fill="url(#s1)"/>
+<defs><radialGradient id="s1" cx="0" cy="0" r="1" gradientTransform="translate(40 30) scale(220 160)"><stop offset="0" stop-color="#2E8BFF" stop-opacity=".22"/><stop offset="1" stop-color="#2E8BFF" stop-opacity="0"/></radialGradient></defs>
+<circle cx="38" cy="40" r="11" fill="none" stroke="#2E8BFF" stroke-width="3.5" stroke-dasharray="52 20" stroke-linecap="round" transform="rotate(-90 38 40)"/>
+<text x="24" y="88" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#F2F4F8">One click</text>
+<text x="24" y="114" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">A dead container comes back</text>
+<text x="24" y="133" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">with Start. No terminal.</text></g><g transform="translate(600 0)"><rect x=".5" y=".5" width="279" height="149" rx="20" fill="#0E1118" stroke="#232A39"/>
+<rect x=".5" y=".5" width="279" height="149" rx="20" fill="url(#s2)"/>
+<defs><radialGradient id="s2" cx="0" cy="0" r="1" gradientTransform="translate(40 30) scale(220 160)"><stop offset="0" stop-color="#8B7CFF" stop-opacity=".22"/><stop offset="1" stop-color="#8B7CFF" stop-opacity="0"/></radialGradient></defs>
+<circle cx="38" cy="40" r="11" fill="none" stroke="#8B7CFF" stroke-width="3.5" stroke-dasharray="52 20" stroke-linecap="round" transform="rotate(-90 38 40)"/>
+<text x="24" y="88" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#F2F4F8">Quiet alerts</text>
+<text x="24" y="114" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">Offline, unhealthy, back online.</text>
+<text x="24" y="133" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">Each one waits 15 minutes.</text></g><g transform="translate(0 170)"><rect x=".5" y=".5" width="279" height="149" rx="20" fill="#0E1118" stroke="#232A39"/>
+<rect x=".5" y=".5" width="279" height="149" rx="20" fill="url(#s3)"/>
+<defs><radialGradient id="s3" cx="0" cy="0" r="1" gradientTransform="translate(40 30) scale(220 160)"><stop offset="0" stop-color="#34C759" stop-opacity=".22"/><stop offset="1" stop-color="#34C759" stop-opacity="0"/></radialGradient></defs>
+<circle cx="38" cy="40" r="11" fill="none" stroke="#34C759" stroke-width="3.5" stroke-dasharray="52 20" stroke-linecap="round" transform="rotate(-90 38 40)"/>
+<text x="24" y="88" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#F2F4F8">Widgets</text>
+<text x="24" y="114" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">Small and medium, on the desktop,</text>
+<text x="24" y="133" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">in the style you chose.</text></g><g transform="translate(300 170)"><rect x=".5" y=".5" width="279" height="149" rx="20" fill="#0E1118" stroke="#232A39"/>
+<rect x=".5" y=".5" width="279" height="149" rx="20" fill="url(#s4)"/>
+<defs><radialGradient id="s4" cx="0" cy="0" r="1" gradientTransform="translate(40 30) scale(220 160)"><stop offset="0" stop-color="#FF9F0A" stop-opacity=".22"/><stop offset="1" stop-color="#FF9F0A" stop-opacity="0"/></radialGradient></defs>
+<circle cx="38" cy="40" r="11" fill="none" stroke="#FF9F0A" stroke-width="3.5" stroke-dasharray="52 20" stroke-linecap="round" transform="rotate(-90 38 40)"/>
+<text x="24" y="88" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#F2F4F8">Truly native</text>
+<text x="24" y="114" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">Swift 6, SwiftUI, Liquid Glass.</text>
+<text x="24" y="133" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">No Electron, no web view.</text></g><g transform="translate(600 170)"><rect x=".5" y=".5" width="279" height="149" rx="20" fill="#0E1118" stroke="#232A39"/>
+<rect x=".5" y=".5" width="279" height="149" rx="20" fill="url(#s5)"/>
+<defs><radialGradient id="s5" cx="0" cy="0" r="1" gradientTransform="translate(40 30) scale(220 160)"><stop offset="0" stop-color="#FF5E8A" stop-opacity=".22"/><stop offset="1" stop-color="#FF5E8A" stop-opacity="0"/></radialGradient></defs>
+<circle cx="38" cy="40" r="11" fill="none" stroke="#FF5E8A" stroke-width="3.5" stroke-dasharray="52 20" stroke-linecap="round" transform="rotate(-90 38 40)"/>
+<text x="24" y="88" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="20" font-weight="700" fill="#F2F4F8">Private</text>
+<text x="24" y="114" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">No account, no cloud,</text>
+<text x="24" y="133" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Helvetica, Arial, sans-serif" font-size="14" fill="#9AA3B5">no telemetry.</text></g></svg>

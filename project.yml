@@ -38,6 +38,8 @@ targets:
       path: Pulse/Info.plist
       properties:
         CFBundleDisplayName: Pulse
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         LSUIElement: true
         LSApplicationCategoryType: public.app-category.utilities
         NSHumanReadableCopyright: "© 2026 Adrien Robino"
@@ -66,6 +68,8 @@ targets:
       path: PulseWidgets/Info.plist
       properties:
         CFBundleDisplayName: Pulse
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:

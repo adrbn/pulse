@@ -19,7 +19,7 @@ vitals, containers and alerts in one Liquid Glass popover.
 
 <br>
 
-<a href="https://github.com/adrbn/pulse/releases/latest"><img src="docs/ui/pills.svg" height="30" alt="v1.0.4, macOS 26+, Beszel, Proxmox, Docker, notarized, no account, MIT"></a>
+<a href="https://github.com/adrbn/pulse/releases/latest"><img src="docs/ui/pills.svg" height="30" alt="v1.0.5, macOS 26+, Beszel, Proxmox, Docker, notarized, no account, MIT"></a>
 
 <br>
 

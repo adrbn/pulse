@@ -1,4 +1,4 @@
-import Foundation
+import AppKit
 import Observation
 import PulseKit
 import WidgetKit
@@ -22,13 +22,21 @@ final class Monitor {
     private var lastWidgetKey = ""
     private let notifier = Notifier()
     private var defaultsObserver: NSObjectProtocol?
+    private var wakeObserver: NSObjectProtocol?
 
     init() {
         snapshot = Store.loadSnapshot()
-        lastSuccess = snapshot.map(\.server.lastSeen)
+        lastSuccess = .now   // Pulse wasn't running before: count silence from launch, not from the saved reading.
         if let snapshot { status = StatusEngine.evaluate(snapshot, treatStoppedAsWarning: prefs.bool(forKey: Pref.stoppedIsWarning), now: .now) }
         defaultsObserver = NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.settingsChanged() }
+        }
+        // While the Mac sleeps nobody is watching: that gap is not an outage. Count silence from the wake.
+        wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated {
+                self?.lastSuccess = .now
+                self?.restartLoop()
+            }
         }
     }
 
@@ -101,7 +109,8 @@ final class Monitor {
         var server = reading.server
         if server.online { server.lastSeen = now; lastSuccess = now }
 
-        let wasOffline = previous.map { !$0.server.online || StatusEngine.isOffline(lastSeen: $0.server.lastSeen, now: now) } ?? false
+        // Only an outage Pulse actually saw: a stale reading after sleep is not one.
+        let wasOffline = previous.map { !$0.server.online } ?? false
         var newEvents: [PulseEvent] = []
         if wasOffline, server.online, let prev = previous {
             newEvents.append(PulseEvent(id: "online-\(Int(now.timeIntervalSince1970))", time: now,
@@ -135,9 +144,9 @@ final class Monitor {
                 Store.save(history)
             }
             snap.server.online = false
-            snap.server.lastSeen = since
             snap.events = history.events
         }
+        snap.server.lastSeen = since   // after sleep or launch, `since` restarts the 60 s grace
         let previous = snapshot
         publish(snap, previous: previous, now: now)
         if now.timeIntervalSince(since) >= Thresholds.offlineAlertAfter {

@@ -135,7 +135,8 @@ final class Monitor {
 
     private func markUnreachable(now: Date) {
         guard var snap = snapshot else { status = Status(level: .offline, reasons: [lastError ?? "Unreachable"]); return }
-        let since = lastSuccess ?? snap.server.lastSeen
+        // Already offline: keep the real last contact. The wake/launch grace only applies to a server we last saw up.
+        let since = snap.server.online ? (lastSuccess ?? snap.server.lastSeen) : snap.server.lastSeen
         if StatusEngine.isOffline(lastSeen: since, now: now) {
             if snap.server.online {
                 history.events = EventDetector.merge(history.events, [PulseEvent(
@@ -146,7 +147,7 @@ final class Monitor {
             snap.server.online = false
             snap.events = history.events
         }
-        snap.server.lastSeen = since   // after sleep or launch, `since` restarts the 60 s grace
+        snap.server.lastSeen = since
         let previous = snapshot
         publish(snap, previous: previous, now: now)
         if now.timeIntervalSince(since) >= Thresholds.offlineAlertAfter {

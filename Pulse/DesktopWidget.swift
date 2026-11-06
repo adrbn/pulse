@@ -55,8 +55,8 @@ private struct DesktopWidgetView: View {
     @Environment(\.colorScheme) private var scheme
 
     var body: some View {
-        // Ticks so "Updated N min ago" appears if the Monitor ever stops publishing.
-        TimelineView(.periodic(from: .now, by: 30)) { ctx in
+        // Ticks to rotate stopped-container names, and so "Updated N min ago" appears if the Monitor stops publishing.
+        TimelineView(.periodic(from: .now, by: 3)) { ctx in
             PulseWidgetView(snap: monitor.snapshot ?? Fixtures.snapshot(.offline), status: monitor.status,
                             style: style, variant: ring, size: size, now: ctx.date)
                 .padding(16)

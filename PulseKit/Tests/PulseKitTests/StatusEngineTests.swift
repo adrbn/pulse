@@ -123,4 +123,15 @@ struct HaloMathTests {
     let stacks = Stacks.group(cs)
     #expect(stacks.map(\.name) == ["other", "nextcloud"])   // "other" holds a stopped one, so it sorts first
     #expect(stacks.first?.containers.map(\.name) == ["bell", "eli"])
+
+}
+
+@Test func problemsLineCyclesThroughEveryName() {
+    var s = Fixtures.snapshot()
+    s.containers = Fixtures.containers(unhealthy: "jellyfin")
+    let t = Date(timeIntervalSince1970: 0)
+    let lines = Set((0..<s.problems.count).compactMap { WidgetText.problemsLine(s, now: t.addingTimeInterval(Double($0) * 3)) })
+    #expect(s.problems.count == 2)
+    #expect(lines.count == 2)
+    #expect(lines.contains { $0.hasPrefix("jellyfin unhealthy") })
 }

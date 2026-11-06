@@ -40,11 +40,13 @@ enum WidgetText {
         }
     }
 
-    static func problemsLine(_ snap: Snapshot) -> String? {
+    /// Several problems take turns, one every 3 s of `now`, so every name shows up.
+    static func problemsLine(_ snap: Snapshot, now: Date) -> String? {
         let p = snap.problems
-        guard let first = p.first else { return nil }
-        let word = first.state == .unhealthy ? "unhealthy" : "stopped"
-        return p.count == 1 ? "\(first.name) \(word)" : "\(first.name) and \(p.count - 1) more"
+        guard !p.isEmpty else { return nil }
+        let i = Int(now.timeIntervalSince1970 / 3) % p.count
+        let word = p[i].state == .unhealthy ? "unhealthy" : "stopped"
+        return p.count == 1 ? "\(p[i].name) \(word)" : "\(p[i].name) \(word) · \(i + 1)/\(p.count)"
     }
 
     static func stoppedSuffix(_ snap: Snapshot) -> String {
@@ -117,7 +119,7 @@ struct HaloMedium: View {
                     LegendRow(color: p.indigo, label: "Disk", value: "\(Format.pct(s.disk))%")
                 }
                 Spacer(minLength: 6)
-                Text(WidgetText.problemsLine(snap) ?? "All containers running").pulseFont(12).foregroundStyle(p.text2).lineLimit(1)
+                Text(WidgetText.problemsLine(snap, now: now) ?? "All containers running").pulseFont(12).foregroundStyle(p.text2).lineLimit(1)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .leading)

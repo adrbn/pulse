@@ -6,10 +6,11 @@ import SwiftUI
 @MainActor
 final class DesktopWidget {
     private let monitor: Monitor
+    private let onClick: () -> Void
     private var panel: NSPanel?
     private var size: String = "off"
 
-    init(monitor: Monitor) { self.monitor = monitor }
+    init(monitor: Monitor, onClick: @escaping () -> Void) { self.monitor = monitor; self.onClick = onClick }
 
     /// Shows, resizes or hides the panel to match Settings → Appearance → Desktop widget.
     func update() {
@@ -31,7 +32,9 @@ final class DesktopWidget {
         p.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopIconWindow)) + 1)
         p.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
         p.isMovableByWindowBackground = true
-        p.contentView = DraggableHostingView(rootView: DesktopWidgetView(monitor: monitor, size: medium ? .medium : .small, frame: frame))
+        let host = DraggableHostingView(rootView: DesktopWidgetView(monitor: monitor, size: medium ? .medium : .small, frame: frame))
+        host.onClick = onClick
+        p.contentView = host
         if !p.setFrameUsingName("PulseDesktopWidget") { p.center() }
         p.setFrameAutosaveName("PulseDesktopWidget")
         p.setContentSize(frame)
@@ -42,8 +45,14 @@ final class DesktopWidget {
 }
 
 /// SwiftUI swallows mouse-downs, so isMovableByWindowBackground alone never drags the panel.
+/// performDrag returns on mouse-up: if the panel didn't move, it was a click.
 private final class DraggableHostingView<V: View>: NSHostingView<V> {
-    override func mouseDown(with event: NSEvent) { window?.performDrag(with: event) }
+    var onClick: () -> Void = {}
+    override func mouseDown(with event: NSEvent) {
+        let before = window?.frame.origin
+        window?.performDrag(with: event)
+        if window?.frame.origin == before { onClick() }
+    }
 }
 
 private struct DesktopWidgetView: View {

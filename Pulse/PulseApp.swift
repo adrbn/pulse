@@ -33,7 +33,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         self.monitor = monitor
         statusItem = StatusItemController(monitor: monitor) { [weak self] in self?.showSettings() }
         monitor.start()
-        desktopWidget = DesktopWidget(monitor: monitor)
+        desktopWidget = DesktopWidget(monitor: monitor) { [weak self] in self?.statusItem?.toggle() }
         desktopWidget?.update()
         NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {

@@ -7,7 +7,11 @@ import PulseKit
 final class Notifier {
     static let cooldown: TimeInterval = 15 * 60
     private var lastSent: [String: Date] = [:]
-    private var alertedOutage: Date?
+    /// Persisted so relaunching Pulse during an outage doesn't alert again.
+    private var alertedOutage: Date? {
+        get { UserDefaults.standard.object(forKey: "alertedOutage") as? Date }
+        set { UserDefaults.standard.set(newValue, forKey: "alertedOutage") }
+    }
     private var prefs: UserDefaults { AppGroup.defaults }
 
     func requestAuthorization() {
@@ -18,19 +22,21 @@ final class Notifier {
     }
 
     func unreachable(_ snap: Snapshot, since: Date, style: PulseStyle, events: [PulseEvent]) {
-        guard prefs.bool(forKey: Pref.alertOffline), alertedOutage != since else { return }
+        guard prefs.bool(forKey: Pref.alertOffline), abs(alertedOutage?.timeIntervalSince(since) ?? .infinity) >= 1 else { return }
         alertedOutage = since
-        let mins = max(3, Int(Date.now.timeIntervalSince(since) / 60))
         var body = "No response since \(Format.clock(since)). Last reading: \(snap.running) of \(snap.total) containers running."
         if style == .memory, let pattern = Self.outagePattern(events, now: .now) { body = "No response since \(Format.clock(since)). \(pattern)" }
-        send(key: "offline", title: "\(snap.server.name) unreachable for \(mins) min", body: body,
+        send(key: "offline", title: "\(snap.server.name) unreachable for \(Self.duration(max(180, Date.now.timeIntervalSince(since))))", body: body,
              server: snap.server.name, glyph: style, cooldown: false)
     }
+
+    /// "12 min", "17 h 25 m", "2 d 3 h"
+    static func duration(_ t: TimeInterval) -> String { t < 3600 ? "\(Int(t / 60)) min" : Format.uptime(t) }
 
     func backOnline(server: String, downFor: TimeInterval, running: Int, total: Int) {
         alertedOutage = nil
         guard prefs.bool(forKey: Pref.alertBackOnline), downFor >= Thresholds.offlineAlertAfter else { return }
-        send(key: "online", title: "\(server) is back · down \(Int(downFor / 60)) min",
+        send(key: "online", title: "\(server) is back · down \(Self.duration(downFor))",
              body: "\(running) of \(total) containers running.", server: server, glyph: nil, cooldown: false)
     }
 

@@ -61,8 +61,9 @@ private struct DesktopWidgetView: View {
                             style: style, variant: ring, size: size, now: ctx.date)
                 .padding(16)
                 .frame(width: frame.width, height: frame.height)
-                // Same solid card as the native widget, not a wallpaper-tinted glass.
-                .background(scheme == .dark ? Color(white: 0.12) : .white, in: RoundedRectangle(cornerRadius: 22))
+                // Same card as the native widget: a soft top-to-bottom gradient, sampled from a screenshot of it.
+                .background(LinearGradient(colors: scheme == .dark ? [Color(white: 0.22), Color(white: 0.12)] : [.white, Color(white: 0.94)],
+                                           startPoint: .top, endPoint: .bottom), in: RoundedRectangle(cornerRadius: 22))
                 .overlay(RoundedRectangle(cornerRadius: 22).strokeBorder(.primary.opacity(0.1)))
         }
     }

@@ -17,6 +17,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
     private var monitor: Monitor?
     private var statusItem: StatusItemController?
     private var settings: SettingsWindowController?
+    private var desktopWidget: DesktopWidget?
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         Pref.registerDefaults()
@@ -32,10 +33,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate, UNUserNotificationCent
         self.monitor = monitor
         statusItem = StatusItemController(monitor: monitor) { [weak self] in self?.showSettings() }
         monitor.start()
+        desktopWidget = DesktopWidget(monitor: monitor)
+        desktopWidget?.update()
         NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
                 self?.applyAppearance()
                 self?.statusItem?.updateIcon()
+                self?.desktopWidget?.update()
             }
         }
         if args.contains("--open-settings") { showSettings() }

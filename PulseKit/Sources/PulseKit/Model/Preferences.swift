@@ -24,6 +24,7 @@ public enum Pref {
     public static let widgetsFollowStyle = "widgetsFollowStyle"
     public static let stoppedIsWarning = "stoppedIsWarning"
     public static let appearance = "appearance"          // AppearanceMode
+    public static let desktopWidget = "desktopWidget"    // off | small | medium
 
     public static let source = "source"                  // SourceKind
     public static let displayName = "displayName"
@@ -49,6 +50,7 @@ public enum Pref {
             widgetsFollowStyle: true,
             stoppedIsWarning: false,
             appearance: AppearanceMode.system.rawValue,
+            desktopWidget: "off",
             source: SourceKind.beszel.rawValue,
             displayName: "",
             beszelURL: "",

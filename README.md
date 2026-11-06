@@ -19,7 +19,7 @@ vitals, containers and alerts in one Liquid Glass popover.
 
 <br>
 
-<a href="https://github.com/adrbn/pulse/releases/latest"><img src="docs/ui/pills.svg" height="30" alt="v1.0.6, macOS 26+, Beszel, Proxmox, Docker, notarized, no account, MIT"></a>
+<a href="https://github.com/adrbn/pulse/releases/latest"><img src="docs/ui/pills.svg" height="30" alt="v1.0.7, macOS 26+, Beszel, Proxmox, Docker, notarized, no account, MIT"></a>
 
 <br>
 
@@ -63,6 +63,8 @@ When a container dies, a notification shows up with a **Start** button.
 
 <img src="docs/shots/widgets-dark.png" width="100%" alt="Small and medium widgets in dark mode">
 <img src="docs/shots/widgets-light.png" width="100%" alt="Small and medium widgets in light mode">
+
+macOS rations how often widgets refresh, so they can lag. For a widget that never lags, turn on Settings → Appearance → Live desktop widget: Pulse draws it itself, updated with every check.
 
 <img src="docs/shots/menubar.png" width="640" alt="A dark menu bar with the Halo, Rings and Live icons, each healthy, warning and offline">
 

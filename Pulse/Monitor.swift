@@ -18,7 +18,6 @@ final class Monitor {
     private var source: ServerDataSource?
     private var lastSuccess: Date?
     private var loop: Task<Void, Never>?
-    private var lastWidgetReload = Date.distantPast
     private var lastWidgetKey = ""
     private let notifier = Notifier()
     private var defaultsObserver: NSObjectProtocol?
@@ -165,15 +164,13 @@ final class Monitor {
         reloadWidgets(force: false)
     }
 
-    /// WidgetKit has a refresh budget: reload on visible changes, at most every 10 min otherwise.
+    /// WidgetKit has a refresh budget: reload only on visible changes (the timeline re-reads the snapshot every 30 min anyway).
     func reloadWidgets(force: Bool) {
         guard let s = snapshot else { return }
         let key = [status.level.rawValue, "\(s.running)/\(s.total)", prefs.string(forKey: Pref.style) ?? "",
                    prefs.string(forKey: Pref.containerRing) ?? "", "\(prefs.bool(forKey: Pref.widgetsFollowStyle))"].joined(separator: "|")
-        let now = Date.now
-        if force || key != lastWidgetKey || now.timeIntervalSince(lastWidgetReload) > 600 {
+        if force || key != lastWidgetKey {
             lastWidgetKey = key
-            lastWidgetReload = now
             WidgetCenter.shared.reloadAllTimelines()
         }
     }

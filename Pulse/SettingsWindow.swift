@@ -103,6 +103,7 @@ struct AppearanceTab: View {
     @AppStorage(Pref.widgetsFollowStyle, store: AppGroup.defaults) private var widgetsFollow = true
     @AppStorage(Pref.stoppedIsWarning, store: AppGroup.defaults) private var stoppedWarns = false
     @AppStorage(Pref.appearance, store: AppGroup.defaults) private var appearance = AppearanceMode.system
+    @AppStorage(Pref.desktopWidget, store: AppGroup.defaults) private var desktopWidget = "off"
 
     var body: some View {
         TabPage {
@@ -128,6 +129,10 @@ struct AppearanceTab: View {
                         .pickerStyle(.segmented).labelsHidden().fixedSize()
                 }
                 SettingRow(title: "Widgets follow this style") { Toggle("", isOn: $widgetsFollow).toggleStyle(.switch).labelsHidden() }
+                SettingRow(title: "Live desktop widget") {
+                    Picker("", selection: $desktopWidget) { Text("Off").tag("off"); Text("Small").tag("small"); Text("Medium").tag("medium") }
+                        .pickerStyle(.segmented).labelsHidden().fixedSize()
+                }
                 SettingRow(title: "Treat stopped containers as a warning") { Toggle("", isOn: $stoppedWarns).toggleStyle(.switch).labelsHidden() }
                 SettingRow(title: "Appearance") {
                     Picker("", selection: $appearance) {

@@ -20,7 +20,8 @@ final class DesktopWidget {
         panel = nil
         guard wanted != "off" else { return }
         let medium = wanted == "medium"
-        let p = NSPanel(contentRect: NSRect(x: 0, y: 0, width: medium ? 364 : 170, height: 170),
+        let frame = NSSize(width: medium ? 344 : 163, height: 163)   // measured on the native desktop widget
+        let p = NSPanel(contentRect: NSRect(origin: .zero, size: frame),
                         styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
         p.isReleasedWhenClosed = false
         p.backgroundColor = .clear
@@ -30,29 +31,51 @@ final class DesktopWidget {
         p.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopIconWindow)) + 1)
         p.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
         p.isMovableByWindowBackground = true
-        p.contentView = NSHostingView(rootView: DesktopWidgetView(monitor: monitor, size: medium ? .medium : .small))
+        let glass = NSVisualEffectView(frame: NSRect(origin: .zero, size: frame))
+        glass.material = .hudWindow
+        glass.blendingMode = .behindWindow
+        glass.state = .active
+        glass.appearance = NSAppearance(named: .darkAqua)
+        glass.wantsLayer = true
+        glass.layer?.cornerRadius = 22
+        glass.layer?.masksToBounds = true
+        let host = DraggableHostingView(rootView: DesktopWidgetView(monitor: monitor, size: medium ? .medium : .small, frame: frame))
+        host.frame = glass.bounds
+        host.autoresizingMask = [.width, .height]
+        glass.addSubview(host)
+        p.contentView = glass
         if !p.setFrameUsingName("PulseDesktopWidget") { p.center() }
         p.setFrameAutosaveName("PulseDesktopWidget")
-        p.setContentSize(NSSize(width: medium ? 364 : 170, height: 170))
+        p.setContentSize(frame)
         p.orderFront(nil)
         panel = p
     }
 }
 
+/// SwiftUI swallows mouse-downs, so isMovableByWindowBackground alone never drags the panel.
+private final class DraggableHostingView<V: View>: NSHostingView<V> {
+    override func mouseDown(with event: NSEvent) { window?.performDrag(with: event) }
+}
+
 private struct DesktopWidgetView: View {
     let monitor: Monitor
     let size: WidgetSize
+    let frame: NSSize
     @AppStorage(Pref.style, store: AppGroup.defaults) private var style = PulseStyle.halo
     @AppStorage(Pref.containerRing, store: AppGroup.defaults) private var ring = ContainerRing.ticks
 
     var body: some View {
         // Ticks so "Updated N min ago" appears if the Monitor ever stops publishing.
         TimelineView(.periodic(from: .now, by: 30)) { ctx in
-            PulseWidgetView(snap: monitor.snapshot ?? Fixtures.snapshot(.offline), status: monitor.status,
-                            style: style, variant: ring, size: size, now: ctx.date)
-                .padding(16)
-                .frame(width: size == .small ? 170 : 364, height: 170)
-                .background(.regularMaterial, in: RoundedRectangle(cornerRadius: 22))
+            // Like macOS's desktop widgets: monochrome, brightness becomes opacity over the wallpaper glass.
+            Color.white.mask {
+                PulseWidgetView(snap: monitor.snapshot ?? Fixtures.snapshot(.offline), status: monitor.status,
+                                style: style, variant: ring, size: size, now: ctx.date)
+                    .padding(16)
+                    .environment(\.colorScheme, .dark)
+                    .luminanceToAlpha()
+            }
+            .frame(width: frame.width, height: frame.height)
         }
     }
 }

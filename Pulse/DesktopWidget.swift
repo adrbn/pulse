@@ -31,7 +31,6 @@ final class DesktopWidget {
         // Above the desktop icons, below every app window, on all Spaces: where native widgets sit.
         p.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopIconWindow)) + 1)
         p.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
-        p.isMovableByWindowBackground = true
         let host = DraggableHostingView(rootView: DesktopWidgetView(monitor: monitor, size: medium ? .medium : .small, frame: frame))
         host.onClick = onClick
         p.contentView = host
@@ -44,14 +43,30 @@ final class DesktopWidget {
     }
 }
 
-/// SwiftUI swallows mouse-downs, so isMovableByWindowBackground alone never drags the panel.
-/// performDrag returns on mouse-up: if the panel didn't move, it was a click.
+/// SwiftUI swallows mouse-downs, so the panel moves itself: a drag moves it, a click without movement calls onClick.
 private final class DraggableHostingView<V: View>: NSHostingView<V> {
     var onClick: () -> Void = {}
+    private var grab: NSPoint?
+    private var dragged = false
+
     override func mouseDown(with event: NSEvent) {
-        let before = window?.frame.origin
-        window?.performDrag(with: event)
-        if window?.frame.origin == before { onClick() }
+        grab = NSEvent.mouseLocation
+        dragged = false
+    }
+
+    override func mouseDragged(with event: NSEvent) {
+        guard let window, let start = grab else { return }
+        let now = NSEvent.mouseLocation
+        let dx = now.x - start.x, dy = now.y - start.y
+        guard dragged || abs(dx) + abs(dy) > 3 else { return }
+        dragged = true
+        window.setFrameOrigin(NSPoint(x: window.frame.origin.x + dx, y: window.frame.origin.y + dy))
+        grab = now
+    }
+
+    override func mouseUp(with event: NSEvent) {
+        if !dragged { onClick() }
+        grab = nil
     }
 }
 

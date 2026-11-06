@@ -13,6 +13,7 @@ final class StatusItemController: NSObject, NSWindowDelegate {
     private var clickMonitor: Any?
     private var keyMonitor: Any?
     private var anchorTop: CGFloat = 0
+    private var closedAt = Date.distantPast
     let openSettings: () -> Void
 
     init(monitor: Monitor, openSettings: @escaping () -> Void) {
@@ -65,7 +66,11 @@ final class StatusItemController: NSObject, NSWindowDelegate {
     @objc func refreshNow() { Task { await monitor.refresh() } }
     @objc private func settings() { close(); openSettings() }
 
-    func toggle() { panel?.isVisible == true ? close() : open() }
+    /// The status item lives outside Pulse's process, so clicking it to close first fires the "click elsewhere"
+    /// monitor on mouse-down, then this toggle on mouse-up: don't reopen what that click just closed.
+    func toggle() {
+        if panel?.isVisible == true { close() } else if Date.now.timeIntervalSince(closedAt) > 0.5 { open() }
+    }
 
     private func open() {
         let panel = self.panel ?? makePanel()
@@ -105,6 +110,7 @@ final class StatusItemController: NSObject, NSWindowDelegate {
     func close() {
         guard panel?.isVisible == true else { return }
         panel?.orderOut(nil)
+        closedAt = .now
         monitor.popoverOpen = false
         if let m = clickMonitor { NSEvent.removeMonitor(m); clickMonitor = nil }
         if let m = keyMonitor { NSEvent.removeMonitor(m); keyMonitor = nil }

@@ -31,23 +31,12 @@ final class DesktopWidget {
         p.level = NSWindow.Level(rawValue: Int(CGWindowLevelForKey(.desktopIconWindow)) + 1)
         p.collectionBehavior = [.canJoinAllSpaces, .stationary, .ignoresCycle]
         p.isMovableByWindowBackground = true
-        let glass = NSVisualEffectView(frame: NSRect(origin: .zero, size: frame))
-        glass.material = .hudWindow
-        glass.blendingMode = .behindWindow
-        glass.state = .active
-        glass.appearance = NSAppearance(named: .darkAqua)
-        glass.wantsLayer = true
-        glass.layer?.cornerRadius = 22
-        glass.layer?.masksToBounds = true
-        let host = DraggableHostingView(rootView: DesktopWidgetView(monitor: monitor, size: medium ? .medium : .small, frame: frame))
-        host.frame = glass.bounds
-        host.autoresizingMask = [.width, .height]
-        glass.addSubview(host)
-        p.contentView = glass
+        p.contentView = DraggableHostingView(rootView: DesktopWidgetView(monitor: monitor, size: medium ? .medium : .small, frame: frame))
         if !p.setFrameUsingName("PulseDesktopWidget") { p.center() }
         p.setFrameAutosaveName("PulseDesktopWidget")
         p.setContentSize(frame)
         p.orderFront(nil)
+        p.invalidateShadow()
         panel = p
     }
 }
@@ -63,19 +52,18 @@ private struct DesktopWidgetView: View {
     let frame: NSSize
     @AppStorage(Pref.style, store: AppGroup.defaults) private var style = PulseStyle.halo
     @AppStorage(Pref.containerRing, store: AppGroup.defaults) private var ring = ContainerRing.ticks
+    @Environment(\.colorScheme) private var scheme
 
     var body: some View {
         // Ticks so "Updated N min ago" appears if the Monitor ever stops publishing.
         TimelineView(.periodic(from: .now, by: 30)) { ctx in
-            // Like macOS's desktop widgets: monochrome, brightness becomes opacity over the wallpaper glass.
-            Color.white.mask {
-                PulseWidgetView(snap: monitor.snapshot ?? Fixtures.snapshot(.offline), status: monitor.status,
-                                style: style, variant: ring, size: size, now: ctx.date)
-                    .padding(16)
-                    .environment(\.colorScheme, .dark)
-                    .luminanceToAlpha()
-            }
-            .frame(width: frame.width, height: frame.height)
+            PulseWidgetView(snap: monitor.snapshot ?? Fixtures.snapshot(.offline), status: monitor.status,
+                            style: style, variant: ring, size: size, now: ctx.date)
+                .padding(16)
+                .frame(width: frame.width, height: frame.height)
+                // Same solid card as the native widget, not a wallpaper-tinted glass.
+                .background(scheme == .dark ? Color(white: 0.12) : .white, in: RoundedRectangle(cornerRadius: 22))
+                .overlay(RoundedRectangle(cornerRadius: 22).strokeBorder(.primary.opacity(0.1)))
         }
     }
 }

@@ -61,7 +61,7 @@ struct HaloStyle: View {
             .pulseFont(11).foregroundStyle(p.text3)
         }
         HStack(alignment: .center, spacing: 16) {
-            HaloDrawing(snap: snap, variant: variant, size: 180)
+            HaloDrawing(snap: snap, variant: variant, size: 180, level: status.level)
             VStack(alignment: .leading, spacing: 9) {
                 let containers = LegendItem(color: variant == .ticks ? p.text3 : p.green, label: "Containers",
                                             value: "\(snap.running)", unit: "/ \(snap.total)", size: 19)

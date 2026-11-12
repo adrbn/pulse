@@ -205,12 +205,14 @@ public struct HaloDrawing: View {
     var geometry: HaloGeometry? = nil
     var showCount = true
     var cpuSustained = false
+    var level: StatusLevel? = nil
     @Environment(\.colorScheme) private var scheme
+    @AppStorage(Pref.haloStatusCenter, store: AppGroup.defaults) private var statusCenter = false
 
     public init(snap: Snapshot, variant: ContainerRing, size: CGFloat, geometry: HaloGeometry? = nil,
-                showCount: Bool = true, cpuSustained: Bool = false) {
+                showCount: Bool = true, cpuSustained: Bool = false, level: StatusLevel? = nil) {
         self.snap = snap; self.variant = variant; self.size = size; self.geometry = geometry
-        self.showCount = showCount; self.cpuSustained = cpuSustained
+        self.showCount = showCount; self.cpuSustained = cpuSustained; self.level = level
     }
 
     public var body: some View {
@@ -229,7 +231,9 @@ public struct HaloDrawing: View {
                 let share = snap.total == 0 ? 0 : Double(snap.running) / Double(snap.total) * 100
                 Ring(value: share, radius: arc * k, stroke: 3 * k, color: p.green, track: p.track)
             }
-            if showCount {
+            if showCount, statusCenter, let level {
+                StatusGlyph(level: level, size: 40 * k)
+            } else if showCount {
                 VStack(spacing: 0) {
                     Text("\(snap.running)").pulseFont(24 * k, .bold).tracking(-0.48 * k).foregroundStyle(p.text)
                     Text("of \(snap.total)").pulseFont(11 * k).foregroundStyle(p.text2)
@@ -239,5 +243,25 @@ public struct HaloDrawing: View {
         .frame(width: size, height: size)
         .accessibilityElement(children: .contain)
         .accessibilityLabel("\(snap.running) of \(snap.total) containers running")
+    }
+}
+
+/// Optional Halo centre (Settings → Appearance): the server's state as a shape and a colour, readable without colour too.
+struct StatusGlyph: View {
+    let level: StatusLevel
+    let size: CGFloat
+    @Environment(\.colorScheme) private var scheme
+    var body: some View {
+        let p = Palette(scheme)
+        let (name, color, label) = switch level {
+        case .healthy: ("checkmark.circle.fill", p.green, "All good")
+        case .warning: ("exclamationmark.triangle.fill", p.orange, "Warning")
+        case .offline: ("xmark.octagon.fill", p.red, "Offline")
+        }
+        Image(systemName: name)
+            .symbolRenderingMode(.palette)
+            .foregroundStyle(.white, color)
+            .font(.system(size: size, weight: .semibold))
+            .accessibilityLabel(label)
     }
 }

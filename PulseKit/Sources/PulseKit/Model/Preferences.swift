@@ -25,6 +25,7 @@ public enum Pref {
     public static let stoppedIsWarning = "stoppedIsWarning"
     public static let appearance = "appearance"          // AppearanceMode
     public static let desktopWidget = "desktopWidget"    // off | small | medium
+    public static let haloStatusCenter = "haloStatusCenter" // Halo centre: status glyph instead of the container count
 
     public static let source = "source"                  // SourceKind
     public static let displayName = "displayName"
@@ -51,6 +52,7 @@ public enum Pref {
             stoppedIsWarning: false,
             appearance: AppearanceMode.system.rawValue,
             desktopWidget: "off",
+            haloStatusCenter: false,
             source: SourceKind.beszel.rawValue,
             displayName: "",
             beszelURL: "",

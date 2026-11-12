@@ -232,7 +232,7 @@ public struct HaloDrawing: View {
                 Ring(value: share, radius: arc * k, stroke: 3 * k, color: p.green, track: p.track)
             }
             if showCount, statusCenter, let level {
-                StatusGlyph(level: level, size: 40 * k)
+                StatusGlyph(level: level, size: 46 * k)
             } else if showCount {
                 VStack(spacing: 0) {
                     Text("\(snap.running)").pulseFont(24 * k, .bold).tracking(-0.48 * k).foregroundStyle(p.text)
@@ -254,14 +254,21 @@ struct StatusGlyph: View {
     var body: some View {
         let p = Palette(scheme)
         let (name, color, label) = switch level {
-        case .healthy: ("checkmark.circle.fill", p.green, "All good")
+        case .healthy: ("checkmark", p.green, "All good")
         case .warning: ("exclamationmark.triangle.fill", p.orange, "Warning")
-        case .offline: ("xmark.octagon.fill", p.red, "Offline")
+        case .offline: ("xmark", p.red, "Offline")
         }
-        Image(systemName: name)
-            .symbolRenderingMode(.palette)
-            .foregroundStyle(.white, color)
-            .font(.system(size: size, weight: .semibold))
+        // Always a coloured disc; the white sign inside tells the states apart without colour.
+        let d = size * 0.86   // same footprint as the former SF Symbol circle at this point size
+        Circle().fill(color)
+            .frame(width: d, height: d)
+            .overlay {
+                Image(systemName: name)
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(level == .warning ? color : .white, .white)
+                    .font(.system(size: d * (level == .warning ? 0.56 : 0.5), weight: .bold))
+                    .offset(y: level == .warning ? -d * 0.02 : 0)
+            }
             .accessibilityLabel(label)
     }
 }

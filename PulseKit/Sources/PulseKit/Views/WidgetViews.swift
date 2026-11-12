@@ -107,7 +107,7 @@ struct HaloMedium: View {
         HStack(spacing: 18) {
             ZStack {
                 HaloDrawing(snap: snap, variant: variant, size: 142, geometry: .widget(variant), showCount: false)
-                if statusCenter { StatusGlyph(level: status.level, size: 38) }
+                if statusCenter { StatusGlyph(level: status.level, size: 44) }
                 else { Text("\(snap.running)").pulseFont(26, .bold).tracking(-0.5).foregroundStyle(p.text) }
             }
             VStack(alignment: .leading, spacing: 0) {

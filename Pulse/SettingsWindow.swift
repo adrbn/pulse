@@ -104,7 +104,7 @@ struct AppearanceTab: View {
     @AppStorage(Pref.stoppedIsWarning, store: AppGroup.defaults) private var stoppedWarns = false
     @AppStorage(Pref.appearance, store: AppGroup.defaults) private var appearance = AppearanceMode.system
     @AppStorage(Pref.desktopWidget, store: AppGroup.defaults) private var desktopWidget = "off"
-    @AppStorage(Pref.haloStatusCenter, store: AppGroup.defaults) private var statusCenter = false
+    @AppStorage(Pref.haloCenter, store: AppGroup.defaults) private var center = HaloCenter.count
 
     var body: some View {
         TabPage {
@@ -126,7 +126,7 @@ struct AppearanceTab: View {
                     .pickerStyle(.segmented).labelsHidden().fixedSize().disabled(style != .halo)
                 }
                 SettingRow(title: "Halo center") {
-                    Picker("", selection: $statusCenter) { Text("Containers").tag(false); Text("Status").tag(true) }
+                    Picker("", selection: $center) { Text("Containers").tag(HaloCenter.count); Text("Status").tag(HaloCenter.status); Text("None").tag(HaloCenter.none) }
                         .pickerStyle(.segmented).labelsHidden().fixedSize().disabled(style != .halo)
                 }
                 SettingRow(title: "Menu bar icon") {
@@ -148,7 +148,7 @@ struct AppearanceTab: View {
             }
         }
         .onChange(of: ring) { monitor.reloadWidgets(force: true) }
-        .onChange(of: statusCenter) { monitor.reloadWidgets(force: true) }
+        .onChange(of: center) { monitor.reloadWidgets(force: true) }
         .onChange(of: widgetsFollow) { monitor.reloadWidgets(force: true) }
     }
 }

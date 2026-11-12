@@ -207,7 +207,7 @@ public struct HaloDrawing: View {
     var cpuSustained = false
     var level: StatusLevel? = nil
     @Environment(\.colorScheme) private var scheme
-    @AppStorage(Pref.haloStatusCenter, store: AppGroup.defaults) private var statusCenter = false
+    @AppStorage(Pref.haloCenter, store: AppGroup.defaults) private var center = HaloCenter.count
 
     public init(snap: Snapshot, variant: ContainerRing, size: CGFloat, geometry: HaloGeometry? = nil,
                 showCount: Bool = true, cpuSustained: Bool = false, level: StatusLevel? = nil) {
@@ -231,9 +231,9 @@ public struct HaloDrawing: View {
                 let share = snap.total == 0 ? 0 : Double(snap.running) / Double(snap.total) * 100
                 Ring(value: share, radius: arc * k, stroke: 3 * k, color: p.green, track: p.track)
             }
-            if showCount, statusCenter, let level {
+            if showCount, center == .status, let level {
                 StatusGlyph(level: level, size: 46 * k)
-            } else if showCount {
+            } else if showCount, center != .none {
                 VStack(spacing: 0) {
                     Text("\(snap.running)").pulseFont(24 * k, .bold).tracking(-0.48 * k).foregroundStyle(p.text)
                     Text("of \(snap.total)").pulseFont(11 * k).foregroundStyle(p.text2)

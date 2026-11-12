@@ -100,15 +100,18 @@ struct HaloSmall: View {
 struct HaloMedium: View {
     let snap: Snapshot, status: Status, variant: ContainerRing, now: Date
     @Environment(\.colorScheme) private var scheme
-    @AppStorage(Pref.haloStatusCenter, store: AppGroup.defaults) private var statusCenter = false
+    @AppStorage(Pref.haloCenter, store: AppGroup.defaults) private var center = HaloCenter.count
     var body: some View {
         let p = Palette(scheme)
         let s = snap.server
         HStack(spacing: 18) {
             ZStack {
                 HaloDrawing(snap: snap, variant: variant, size: 142, geometry: .widget(variant), showCount: false)
-                if statusCenter { StatusGlyph(level: status.level, size: 44) }
-                else { Text("\(snap.running)").pulseFont(26, .bold).tracking(-0.5).foregroundStyle(p.text) }
+                switch center {
+                case .status: StatusGlyph(level: status.level, size: 44)
+                case .count: Text("\(snap.running)").pulseFont(26, .bold).tracking(-0.5).foregroundStyle(p.text)
+                case .none: EmptyView()
+                }
             }
             VStack(alignment: .leading, spacing: 0) {
                 NameBlock(name: s.name, line: WidgetText.summary(snap, status, now: now,

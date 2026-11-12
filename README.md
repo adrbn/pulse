@@ -19,7 +19,7 @@ vitals, containers and alerts in one Liquid Glass popover.
 
 <br>
 
-<a href="https://github.com/adrbn/pulse/releases/latest"><img src="docs/ui/pills.svg" height="30" alt="v1.0.15, macOS 26+, Beszel, Proxmox, Docker, notarized, no account, MIT"></a>
+<a href="https://github.com/adrbn/pulse/releases/latest"><img src="docs/ui/pills.svg" height="30" alt="v1.0.16, macOS 26+, Beszel, Proxmox, Docker, notarized, no account, MIT"></a>
 
 <br>
 
@@ -51,6 +51,12 @@ When a container dies, a notification shows up with a **Start** button.
 
 <img src="docs/shots/styles-light.png" width="100%" alt="Halo, Rings, Memory and Live styles in light mode">
 
+In the middle of the Halo: the number of running containers, a status sign, or nothing.<br>
+Settings → Appearance → **Halo center**.
+
+<img src="docs/shots/halo-center-dark.png" width="100%" alt="Halo widgets with a status sign in the middle: a green check when all is well, an orange warning sign, a red cross when the server is offline">
+<img src="docs/shots/halo-center-light.png" width="100%" alt="The same three status signs in light mode">
+
 <br><br>
 
 <img src="docs/ui/h-states.svg" width="720" alt="Colour first, numbers second">
@@ -64,7 +70,9 @@ When a container dies, a notification shows up with a **Start** button.
 <img src="docs/shots/widgets-dark.png" width="100%" alt="Small and medium widgets in dark mode">
 <img src="docs/shots/widgets-light.png" width="100%" alt="Small and medium widgets in light mode">
 
-macOS rations how often widgets refresh, so they can lag. For a widget that never lags, turn on Settings → Appearance → Live desktop widget: Pulse draws it itself, updated with every check.
+macOS rations how often widgets refresh, so they can lag behind.<br>
+**Live desktop widget** never does: Pulse draws it itself and updates it with every check.<br>
+Drag it anywhere, click it to open Pulse. Settings → Appearance → **Live desktop widget**.
 
 <img src="docs/shots/menubar.png" width="640" alt="A dark menu bar with the Halo, Rings and Live icons, each healthy, warning and offline">
 

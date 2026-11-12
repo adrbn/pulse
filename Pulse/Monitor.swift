@@ -168,7 +168,7 @@ final class Monitor {
     func reloadWidgets(force: Bool) {
         guard let s = snapshot else { return }
         let key = [status.level.rawValue, "\(s.running)/\(s.total)", prefs.string(forKey: Pref.style) ?? "",
-                   prefs.string(forKey: Pref.containerRing) ?? "", "\(prefs.bool(forKey: Pref.widgetsFollowStyle))", "\(prefs.bool(forKey: Pref.haloStatusCenter))"].joined(separator: "|")
+                   prefs.string(forKey: Pref.containerRing) ?? "", "\(prefs.bool(forKey: Pref.widgetsFollowStyle))", prefs.string(forKey: Pref.haloCenter) ?? ""].joined(separator: "|")
         if force || key != lastWidgetKey {
             lastWidgetKey = key
             WidgetCenter.shared.reloadAllTimelines()

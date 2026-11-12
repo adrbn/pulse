@@ -4,6 +4,7 @@ public enum PulseStyle: String, CaseIterable, Codable, Sendable { case rings, ha
 public enum ContainerRing: String, CaseIterable, Codable, Sendable { case segments, ticks, beads, inner }
 public enum IconMode: String, CaseIterable, Codable, Sendable { case status, live }
 public enum AppearanceMode: String, CaseIterable, Codable, Sendable { case system, light, dark }
+public enum HaloCenter: String, CaseIterable, Codable, Sendable { case count, status, none }
 public enum SourceKind: String, CaseIterable, Codable, Sendable { case beszel, direct }
 
 public enum AppGroup {
@@ -25,7 +26,7 @@ public enum Pref {
     public static let stoppedIsWarning = "stoppedIsWarning"
     public static let appearance = "appearance"          // AppearanceMode
     public static let desktopWidget = "desktopWidget"    // off | small | medium
-    public static let haloStatusCenter = "haloStatusCenter" // Halo centre: status glyph instead of the container count
+    public static let haloCenter = "haloCenter"          // HaloCenter: container count, status glyph or nothing
 
     public static let source = "source"                  // SourceKind
     public static let displayName = "displayName"
@@ -52,7 +53,7 @@ public enum Pref {
             stoppedIsWarning: false,
             appearance: AppearanceMode.system.rawValue,
             desktopWidget: "off",
-            haloStatusCenter: false,
+            haloCenter: HaloCenter.count.rawValue,
             source: SourceKind.beszel.rawValue,
             displayName: "",
             beszelURL: "",

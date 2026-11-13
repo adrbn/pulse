@@ -1,6 +1,6 @@
 import Foundation
 
-public enum StatusLevel: String, Codable, Sendable { case healthy, warning, offline }
+public enum StatusLevel: String, Codable, Sendable { case healthy, warning, offline, connecting }   // connecting: just woke up, no answer yet — unknown, not down
 
 public struct Status: Sendable, Equatable {
     public var level: StatusLevel
@@ -11,6 +11,7 @@ public struct Status: Sendable, Equatable {
 public enum Thresholds {
     public static let offlineAfter: TimeInterval = 60
     public static let offlineAlertAfter: TimeInterval = 180
+    public static let reconnectGrace: TimeInterval = 90
     public static let sustainedCPU: TimeInterval = 300
 
     public static let cpuWarn = 90.0, cpuCrit = 98.0

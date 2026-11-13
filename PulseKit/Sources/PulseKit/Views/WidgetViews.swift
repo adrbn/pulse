@@ -34,6 +34,7 @@ enum WidgetText {
     static func summary(_ snap: Snapshot, _ status: Status, now: Date, healthyText: String) -> String {
         switch status.level {
         case .offline: return "Offline · \(Format.ago(snap.server.lastSeen, now: now))"
+        case .connecting: return "Reconnecting…"
         case .warning: return status.reasons.first.map { "Warning · \($0)" } ?? "Warning"
         // WidgetKit can delay reloads: say how old the data is rather than look live.
         case .healthy: return now.timeIntervalSince(snap.updatedAt) > 1200 ? "Updated \(Format.ago(snap.updatedAt, now: now))" : healthyText
@@ -200,7 +201,7 @@ struct MemoryMedium: View {
             HStack(alignment: .firstTextBaseline) {
                 Text(s.name).pulseFont(15, .semibold).foregroundStyle(p.text)
                 Spacer()
-                Text(status.level == .offline ? WidgetText.summary(snap, status, now: now, healthyText: "")
+                Text(status.level == .offline || status.level == .connecting ? WidgetText.summary(snap, status, now: now, healthyText: "")
                      : "CPU \(Format.pct(s.cpu))% · RAM \(Format.pct(s.ram))% · Disk \(Format.pct(s.disk))%")
                     .pulseFont(12).foregroundStyle(p.text2)
             }

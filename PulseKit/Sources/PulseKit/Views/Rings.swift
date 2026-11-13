@@ -253,14 +253,32 @@ struct StatusGlyph: View {
     @Environment(\.colorScheme) private var scheme
     var body: some View {
         let p = Palette(scheme)
+        let d = size * 0.86   // same footprint as the former SF Symbol circle at this point size
+        if level == .connecting {
+            // Unknown, not down: a grey disc with a turning arc instead of a red cross.
+            TimelineView(.animation) { ctx in
+                Circle().fill(Color.gray).frame(width: d, height: d)
+                    .overlay {
+                        Circle().trim(from: 0, to: 0.7)
+                            .stroke(.white, style: StrokeStyle(lineWidth: d * 0.09, lineCap: .round))
+                            .frame(width: d * 0.5, height: d * 0.5)
+                            .rotationEffect(.degrees(ctx.date.timeIntervalSinceReferenceDate.truncatingRemainder(dividingBy: 1) * 360))
+                    }
+            }
+            .accessibilityLabel("Reconnecting")
+        } else {
+            disc(p, d)
+        }
+    }
+
+    private func disc(_ p: Palette, _ d: CGFloat) -> some View {
         let (name, color, label) = switch level {
-        case .healthy: ("checkmark", p.green, "All good")
+        case .healthy, .connecting: ("checkmark", p.green, "All good")
         case .warning: ("exclamationmark.triangle.fill", p.orange, "Warning")
         case .offline: ("xmark", p.red, "Offline")
         }
         // Always a coloured disc; the white sign inside tells the states apart without colour.
-        let d = size * 0.86   // same footprint as the former SF Symbol circle at this point size
-        Circle().fill(color)
+        return Circle().fill(color)
             .frame(width: d, height: d)
             .overlay {
                 Image(systemName: name)

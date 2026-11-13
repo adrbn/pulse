@@ -22,22 +22,42 @@ final class Monitor {
     private let notifier = Notifier()
     private var defaultsObserver: NSObjectProtocol?
     private var wakeObserver: NSObjectProtocol?
+    private var sleepObserver: NSObjectProtocol?
+    private var asleep = false
+    private var lastSleep: Date?
+    /// After launch or wake the network takes a while to come back: failures before this are "connecting", not an outage.
+    private var connectingUntil: Date? = .now.addingTimeInterval(Thresholds.reconnectGrace)
 
     init() {
         snapshot = Store.loadSnapshot()
         lastSuccess = .now   // Pulse wasn't running before: count silence from launch, not from the saved reading.
-        if let snapshot { status = StatusEngine.evaluate(snapshot, treatStoppedAsWarning: prefs.bool(forKey: Pref.stoppedIsWarning), now: .now) }
+        if snapshot != nil { status = Status(level: .connecting, reasons: ["Reconnecting"]) }   // saved reading is stale until the first answer
         defaultsObserver = NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated { self?.settingsChanged() }
         }
         // While the Mac sleeps nobody is watching: that gap is not an outage. Count silence from the wake.
         wakeObserver = NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.didWakeNotification, object: nil, queue: .main) { [weak self] _ in
+            MainActor.assumeIsolated { self?.didWake() }
+        }
+        // Dark wakes (Power Nap) fire timers with no network: stop polling until the real wake.
+        sleepObserver = NSWorkspace.shared.notificationCenter.addObserver(forName: NSWorkspace.willSleepNotification, object: nil, queue: .main) { [weak self] _ in
             MainActor.assumeIsolated {
-                self?.lastSuccess = .now
-                self?.restartLoop()
+                self?.asleep = true
+                self?.lastSleep = .now
+                self?.loop?.cancel()
             }
         }
     }
+
+    private func didWake() {
+        asleep = false
+        lastSuccess = .now
+        connectingUntil = .now.addingTimeInterval(Thresholds.reconnectGrace)
+        if snapshot != nil { status = Status(level: .connecting, reasons: ["Reconnecting"]) }
+        restartLoop()
+    }
+
+    private var connecting: Bool { connectingUntil.map { Date.now < $0 } ?? false }
 
     var prefs: UserDefaults { AppGroup.defaults }
 
@@ -56,7 +76,7 @@ final class Monitor {
         let key = keys.map { "\(prefs.object(forKey: $0) ?? "")" }.joined(separator: "|")
         if key != lastSettingsKey, !lastSettingsKey.isEmpty { source = nil }
         lastSettingsKey = key
-        if let snapshot { status = StatusEngine.evaluate(snapshot, treatStoppedAsWarning: prefs.bool(forKey: Pref.stoppedIsWarning), now: .now) }
+        if let snapshot, status.level != .connecting { status = StatusEngine.evaluate(snapshot, treatStoppedAsWarning: prefs.bool(forKey: Pref.stoppedIsWarning), now: .now) }
         reloadWidgets(force: false)
     }
 
@@ -65,14 +85,15 @@ final class Monitor {
         loop = Task { [weak self] in
             while !Task.isCancelled {
                 await self?.refresh()
-                let interval: Duration = (self?.popoverOpen ?? false) ? .seconds(5) : .seconds(30)
+                let fast = (self?.popoverOpen ?? false) || (self?.connecting ?? false)
+                let interval: Duration = fast ? .seconds(5) : .seconds(30)
                 try? await Task.sleep(for: interval)
             }
         }
     }
 
     func refresh() async {
-        guard !isRefreshing else { return }
+        guard !isRefreshing, !asleep else { return }
         isRefreshing = true
         defer { isRefreshing = false }
         let now = Date.now
@@ -81,11 +102,16 @@ final class Monitor {
             guard let source else { return }
             let reading = try await source.fetch()
             lastError = nil
+            connectingUntil = nil
             apply(reading, now: now)
         } catch {
             if lastError != error.localizedDescription { NSLog("Pulse: refresh failed: \(error)") }
             lastError = error.localizedDescription
-            markUnreachable(now: now)
+            if connecting, snapshot != nil {
+                status = Status(level: .connecting, reasons: ["Reconnecting"])
+            } else {
+                markUnreachable(now: now)
+            }
         }
     }
 
@@ -111,7 +137,9 @@ final class Monitor {
         // Only an outage Pulse actually saw: a stale reading after sleep is not one.
         let wasOffline = previous.map { !$0.server.online } ?? false
         var newEvents: [PulseEvent] = []
-        if wasOffline, server.online, let prev = previous {
+        // If the Mac slept during the "outage", Pulse didn't see it end: no alert, no event.
+        let sleptThrough = lastSleep.map { $0 > (previous?.server.lastSeen ?? .distantFuture) } ?? false
+        if wasOffline, server.online, !sleptThrough, let prev = previous {
             newEvents.append(PulseEvent(id: "online-\(Int(now.timeIntervalSince1970))", time: now,
                                         text: "\(server.name) back online", kind: .online))
             notifier.backOnline(server: server.name, downFor: now.timeIntervalSince(prev.server.lastSeen),

@@ -23,6 +23,7 @@ struct StatusLine: View {
         case .healthy: (p.green, "Online · up \(Format.uptime(snap.server.uptime))")
         case .warning: (p.orange, "Warning · " + (status.reasons.first ?? "check containers"))
         case .offline: (p.red, "Offline · last seen \(Format.ago(snap.server.lastSeen, now: now))")
+        case .connecting: (p.text2, "Reconnecting…")
         }
         HStack(spacing: 5) {
             Circle().fill(color).frame(width: 7, height: 7)

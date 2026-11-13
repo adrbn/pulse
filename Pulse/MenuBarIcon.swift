@@ -106,6 +106,7 @@ enum MenuBarIcon {
         case .healthy: "Pulse, \(server) healthy, \(running) of \(total) containers running"
         case .warning: "Pulse, \(server) warning, \(status.reasons.joined(separator: ", ")), \(running) of \(total) containers running"
         case .offline: "Pulse, \(server) offline"
+        case .connecting: "Pulse, reconnecting to \(server)"
         }
     }
 }

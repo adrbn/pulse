@@ -107,7 +107,11 @@ final class Monitor {
         } catch {
             if lastError != error.localizedDescription { NSLog("Pulse: refresh failed: \(error)") }
             lastError = error.localizedDescription
-            if connecting, snapshot != nil {
+            if snapshot != nil, await !Self.macHasInternet() {
+                // The Mac itself is cut off (train Wi-Fi, captive portal, switching networks): that says nothing about the server.
+                lastSuccess = .now
+                status = Status(level: .connecting, reasons: ["No internet on this Mac"])
+            } else if connecting, snapshot != nil {
                 status = Status(level: .connecting, reasons: ["Reconnecting"])
             } else {
                 markUnreachable(now: now)
@@ -201,6 +205,14 @@ final class Monitor {
             lastWidgetKey = key
             WidgetCenter.shared.reloadAllTimelines()
         }
+    }
+
+    /// Apple's captive-portal check: answers "Success" only on a working connection, not behind a portal.
+    private static func macHasInternet() async -> Bool {
+        var req = URLRequest(url: URL(string: "http://captive.apple.com/hotspot-detect.html")!, timeoutInterval: 5)
+        req.cachePolicy = .reloadIgnoringLocalCacheData
+        guard let (data, _) = try? await URLSession(configuration: .ephemeral).data(for: req) else { return false }
+        return String(decoding: data, as: UTF8.self).contains("Success")
     }
 
     // MARK: - Source
